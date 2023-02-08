@@ -1,38 +1,53 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>Blank</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Blank</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <div id="container">
-        <strong>Ready to create an app?</strong>
-        <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+      <div id="container" class='mx-auto'>
+            <p class="form-title text-orange-500 text-2xl">Connectez-vous pour accéder à votre compte</p>
+              <ion-toast :is-open="isOpenRef" @didDismiss="setOpen(false)" message="Hello World!" :duration="1500"></ion-toast>
+            <form @submit.prevent="submit">
+                <input v-model='form.email' type="email" placeholder="E-mail"/> <br/>
+                <input v-model='form.password' type="password" placeholder="Mot de passe"/><br/>
+                <button type="submit" v-if="! loading">Se connecter maintenant</button>
+            </form>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
-<script setup lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+<script setup>
+import { IonContent,
+        IonPage,
+        IonToast
+} from '@ionic/vue';
+
+import { ref } from 'vue';
+import useLogin  from '@/composables/auth.js';
+
+
+const isOpenRef = ref(false);
+const { login, loading } = useLogin();
+
+const setOpen = (state) => (isOpenRef.value = state);
+
+const form = ref({
+  email: '',
+  password: '',
+});
+
+const submit = async () => {
+   await login(form.value);
+   setOpen(true);
+}
+
 </script>
 
 <style scoped>
 #container {
   text-align: center;
-  
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
+  top: 20%;
   transform: translateY(-50%);
 }
 
@@ -41,16 +56,10 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue
   line-height: 26px;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-  
-  color: #8c8c8c;
-  
-  margin: 0;
-}
+
 
 #container a {
   text-decoration: none;
 }
+
 </style>
